@@ -1,3 +1,7 @@
-from solution_init import * 
-
-init()
+def IDS():
+    '''
+    Solution using Iterative Deepening Search
+    '''
+    print ''
+    print 'IDS >>>>'
+    pass
