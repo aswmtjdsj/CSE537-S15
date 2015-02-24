@@ -1,5 +1,6 @@
 import sys, os
 from solution_ids import *
+from solution_astar import *
 
 BOARD_ROW = 7
 BOARD_COL = 7
