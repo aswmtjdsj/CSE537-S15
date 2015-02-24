@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys, os
-from solution_ids import *
+from solution_ids import IDS
 from solution_astar import *
 
 BOARD_ROW = 7
@@ -26,6 +26,8 @@ if __name__ == '__main__':
         if e.__class__ == IndexError:
             raise Exception('''command should be "python solution.py <data_file> <strategy>"
             You Should Specify a data/input file''')
+        else:
+            raise e
 
     print ''
     print 'Board Information >>>>'
@@ -45,16 +47,19 @@ if __name__ == '__main__':
     print "Converted Board Status:"
     for i in board:
         print i
+    print ''
 
     try:
         if sys.argv[2] == '--IDS':
-            IDS()
+            IDS(board)
         elif sys.argv[2] == '--ASTAR':
-            ASTAR()
+            ASTAR(board)
     except Exception as e:
         # print dir(e)
         if e.__class__ == NameError:
             raise Exception('ASTAR() or IDS() method hasn\'t been implemented')
-        if e.__class__ == IndexError:
+        elif e.__class__ == IndexError:
             raise Exception('''command should be "python solution.py <data_file> <strategy>"
             You Should Choose Strategy from "--IDS" or "--ASTAR"''')
+        else:
+            raise e

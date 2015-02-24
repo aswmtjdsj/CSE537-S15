@@ -1,4 +1,4 @@
-def ASTAR():
+def ASTAR(board):
     '''
     Solution using A* Search
     '''
