@@ -2,15 +2,16 @@ import copy
 
 # TODO: use hashing to prevent revisited nodes
 
-def DLS_work(pegs, cur_board, target, boundary, limit, depth):
+def DLS_work(pegs, cur_board, target, boundary, limit, depth, num_no):
     over_limit = False
 
     if len(pegs) == 1 and pegs[0] == target: # Goal arrived
-        return True
+        return (True, num_no)
     if depth == limit: # depth limit reached
-        return -1
+        return (-1, num_no)
 
     # expand
+    num_no += 1
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)] # four directions
     in_board = lambda pos: pos[0] >= 0 and pos[0] < len(boundary) and pos[1] >= 0 and pos[1] < len(boundary[0]) and boundary[pos[0]][pos[1]] != -1 # peg position legality checking
     move = lambda x, y: (x[0]+y[0], x[1]+y[1]) # peg move function
@@ -31,22 +32,24 @@ def DLS_work(pegs, cur_board, target, boundary, limit, depth):
                     new_pegs.remove(peg)
                     new_pegs.remove(next_peg)
                     new_pegs.append(jump_grid)
-                    result = DLS_work(new_pegs, next_board, target, boundary, limit, depth+1)
+                    result = DLS_work(new_pegs, next_board, target, boundary, limit, depth+1, num_no)
+                    num_no = result[1]
+                    result = result[0]
                     if result == -1:
                         over_limit = True
                     elif result != False:
                         if result == True:
-                            return [cur_move]
+                            return ([cur_move], num_no)
                         else:
                             result.append(cur_move)
-                            return result
+                            return (result, num_no)
 
     if over_limit == True:
-        return -1
+        return (-1, num_no)
     else:
-        return False
+        return (False, num_no)
 
-def DLS(board, limit):
+def DLS(board, limit, num_no):
     '''
     depth limited search
     '''
@@ -77,18 +80,18 @@ def DLS(board, limit):
     # print ''
 
     tar_peg = (len(board)/2, len(board[0])/2)
-    result = DLS_work(pegs, board, tar_peg, boundary, limit, 0)
+    (result, num_no) = DLS_work(pegs, board, tar_peg, boundary, limit, 0, num_no)
 
     if result == -1:
         print "Depth Limit {0} reached".format(limit)
         print ''
-        return result
+        return (result, num_no)
     elif result == False:
         print 'DLS didn\'t find any solutions'
         print ''
-        return False
+        return (False, num_no)
     else:
-        return result
+        return (result, num_no)
 
 def IDS(board):
     '''
@@ -98,14 +101,26 @@ def IDS(board):
     print ''
 
     limit = 0
-    while True:
-        result = DLS(board, limit)
-        if result == False:
-            return None
-        elif result != -1:
-            return result
-        limit += 1
+    max_limit = 0
+    for i in board:
+        for j in i:
+            if j == 1:
+                max_limit += 1
 
-        # if limit > 10: # in case of infinite loop, but actually no such case
-        #     break
-    return None
+
+    num_nodes = 0
+
+    while True:
+        (result, num_nodes) = DLS(board, limit, num_nodes)
+
+        if result == False:
+            return (None, num_nodes)
+        elif result != -1:
+            return (result, num_nodes)
+
+        limit += 1
+        if limit > max_limit: # in case of infinite loop, but actually no such case
+            print "Max Depth Limit {0} reached, algorithm to be stopped".format(max_limit)
+            break
+
+    return (None, num_nodes)

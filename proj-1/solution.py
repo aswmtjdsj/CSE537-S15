@@ -69,16 +69,21 @@ if __name__ == '__main__':
 
     try:
         result = None
+        number_of_nodes = 0 # count number of expanded nodes
+
         if sys.argv[2] == '--IDS':
-            result = IDS(board)
+            (result, number_of_nodes) = IDS(board)
         elif sys.argv[2] == '--ASTAR':
-            result = ASTAR(board)
+            (result, number_of_nodes) = ASTAR(board)
         
         if result != None:
             result.reverse()
             show_result = map(lambda x: (index_mapping[x[0][0]][x[0][1]], index_mapping[x[1][0]][x[1][1]]), result)
+            print "Number of Expanded Nodes: {0}".format(number_of_nodes)
+            print ''
+
             print 'Solution Found >>>>'
-            print result
+            # print result
             print show_result
             print ''
 
