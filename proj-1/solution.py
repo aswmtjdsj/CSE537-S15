@@ -76,11 +76,12 @@ if __name__ == '__main__':
         elif sys.argv[2] == '--ASTAR':
             (result, number_of_nodes) = ASTAR(board)
         
+        print "Number of Expanded Nodes: {0}".format(number_of_nodes)
+        print ''
+
         if result != None:
             result.reverse()
             show_result = map(lambda x: (index_mapping[x[0][0]][x[0][1]], index_mapping[x[1][0]][x[1][1]]), result)
-            print "Number of Expanded Nodes: {0}".format(number_of_nodes)
-            print ''
 
             print 'Solution Found >>>>'
             # print result

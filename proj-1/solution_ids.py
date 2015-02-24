@@ -2,8 +2,10 @@ import copy
 
 # TODO: use hashing to prevent revisited nodes
 
-def DLS_work(pegs, cur_board, target, boundary, limit, depth, num_no):
+def DLS_work(pegs, cur_board, target, boundary, limit, depth):
     over_limit = False
+
+    num_no = 1
 
     if len(pegs) == 1 and pegs[0] == target: # Goal arrived
         return (True, num_no)
@@ -11,7 +13,6 @@ def DLS_work(pegs, cur_board, target, boundary, limit, depth, num_no):
         return (-1, num_no)
 
     # expand
-    num_no += 1
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)] # four directions
     in_board = lambda pos: pos[0] >= 0 and pos[0] < len(boundary) and pos[1] >= 0 and pos[1] < len(boundary[0]) and boundary[pos[0]][pos[1]] != -1 # peg position legality checking
     move = lambda x, y: (x[0]+y[0], x[1]+y[1]) # peg move function
@@ -32,8 +33,8 @@ def DLS_work(pegs, cur_board, target, boundary, limit, depth, num_no):
                     new_pegs.remove(peg)
                     new_pegs.remove(next_peg)
                     new_pegs.append(jump_grid)
-                    result = DLS_work(new_pegs, next_board, target, boundary, limit, depth+1, num_no)
-                    num_no = result[1]
+                    result = DLS_work(new_pegs, next_board, target, boundary, limit, depth+1)
+                    num_no += result[1]
                     result = result[0]
                     if result == -1:
                         over_limit = True
@@ -49,7 +50,7 @@ def DLS_work(pegs, cur_board, target, boundary, limit, depth, num_no):
     else:
         return (False, num_no)
 
-def DLS(board, limit, num_no):
+def DLS(board, limit):
     '''
     depth limited search
     '''
@@ -80,7 +81,7 @@ def DLS(board, limit, num_no):
     # print ''
 
     tar_peg = (len(board)/2, len(board[0])/2)
-    (result, num_no) = DLS_work(pegs, board, tar_peg, boundary, limit, 0, num_no)
+    (result, num_no) = DLS_work(pegs, board, tar_peg, boundary, limit, 0)
 
     if result == -1:
         print "Depth Limit {0} reached".format(limit)
@@ -111,7 +112,8 @@ def IDS(board):
     num_nodes = 0
 
     while True:
-        (result, num_nodes) = DLS(board, limit, num_nodes)
+        (result, once_nodes) = DLS(board, limit)
+        num_nodes += once_nodes
 
         if result == False:
             return (None, num_nodes)
