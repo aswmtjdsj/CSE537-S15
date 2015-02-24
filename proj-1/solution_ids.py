@@ -1,3 +1,5 @@
+import copy
+
 def DLS_work(pegs, target, boundary, limit, depth):
     over_limit = False
 
@@ -9,10 +11,13 @@ def DLS_work(pegs, target, boundary, limit, depth):
 
     # expand
     # TODO
+    direction = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    in_board = lambda pos: pos[0] >= 0 and pos[0] < len(boundary) and pos[1] >= 0 and pos[1] < len(boundary[0]) and boundary[pos[0]][pos[1]] != -1
+    # print in_board((3, 3))
 
 def DLS(board, limit):
     pegs = []
-    boundary = board[:]
+    boundary = copy.deepcopy(board)
 
     for idx, row in enumerate(board): # find possible pegs, also which need to be removed
         for jdx, grid in enumerate(row):
@@ -23,6 +28,7 @@ def DLS(board, limit):
     transform[1] = 0
     transform[0] = 0
     transform[-1] = -1
+
     boundary = map(lambda x: map(lambda y: transform[y], x), boundary)
     print 'Boundary of Board >>>>'
     for i in boundary:
@@ -35,9 +41,9 @@ def DLS(board, limit):
     print ''
 
     mapping_cnt = 0
-    mapping = board[:]
+    mapping = copy.deepcopy(board)
     for idx, row in enumerate(board):
-        for jdx, grid in enumerate(row):
+        for jdx, grid in enumerate(row): # use for (x, y) to (mapping_id) tranformation
             if grid != -1:
                 mapping[idx][jdx] = mapping_cnt
                 mapping_cnt += 1
@@ -48,9 +54,9 @@ def DLS(board, limit):
     print ''
 
     tar_peg = (len(board)/2, len(board[0])/2)
-    DLS_work(pegs, tar_peg, boundary, limit, 0)
-
-    return True
+    if DLS_work(pegs, tar_peg, boundary, limit, 0) == True:
+        return True
+    return False
 
 def IDS(board):
     '''
@@ -64,3 +70,6 @@ def IDS(board):
         if DLS(board, limit):
             return True
         limit += 1
+
+        if limit > 10: # in case of infinite loop, but actually no such case
+            break
