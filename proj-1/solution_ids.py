@@ -125,9 +125,12 @@ def IDS(board, flag):
     while True:
         (result, once_nodes, visited_hash, once_mem_max) = DLS(board, limit, visited_hash, flag)
         print "Nodes Expanded in Current DLS: {0}".format(once_nodes)
+        print ''
         print "Current Visited Status Set Size: {0}".format(len(visited_hash))
+        print ''
         if flag == True:
             print "Peak Memory During Current DLS: {0:3f} KiB".format(once_mem_max/1024.)
+            print ''
             memory_used = max(once_mem_max, memory_used)
         num_nodes += once_nodes
 
