@@ -1,5 +1,7 @@
 import copy
 
+# TODO: use hashing to prevent revisited nodes
+
 def DLS_work(pegs, cur_board, target, boundary, limit, depth):
     over_limit = False
 
