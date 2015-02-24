@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import sys, os
 from solution_ids import *
 from solution_astar import *
