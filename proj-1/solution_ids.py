@@ -1,8 +1,6 @@
 import copy
 from guppy import hpy
 
-# TODO: use hashing to prevent revisited nodes
-
 # @profile
 def DLS_work(pegs, cur_board, target, limit, depth, v, flag):
     over_limit = False
