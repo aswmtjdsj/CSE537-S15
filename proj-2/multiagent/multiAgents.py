@@ -139,6 +139,56 @@ class MinimaxAgent(MultiAgentSearchAgent):
       Your minimax agent (question 2)
     """
 
+    def MinimaxFunction(self, MAXGameState, depth):
+        """
+          Min-Max Function
+          return action based on depth and self.evaluationFunction
+        """
+        MAXScore = None # MAX score
+
+        # for agent's move
+        legalMoves = MAXGameState.getLegalActions()
+        # if Directions.STOP in legalMoves:
+        #     legalMoves.remove(Directions.STOP)
+
+        if len(legalMoves) == 0:
+            return self.evaluationFunction(MAXGameState)
+
+        MINGameStatesWithAction = [(MAXGameState.generatePacmanSuccessor(legalMove), legalMove) for legalMove in legalMoves]
+        MINScores = []
+        # print 'MINGameStatesWithAction: {0}'.format(MINGameStatesWithAction)
+
+        for MINGameState, initAction in MINGameStatesWithAction:
+            if depth == self.depth:
+                MINScores.append(self.evaluationFunction(MINGameState))
+            else:
+                currentScores = []
+                curMINGameStates = [MINGameState]
+                for ghostID in self.ghostIDs: # something wrong here
+                    [curMINGameState.getLegalActions(ghostID) for curMINGameState in curMINGameStates]
+                    actions = MINGameState.getLegalActions(ghostID)
+                    if len(actions) != 0:
+                        for action in actions:
+                            nextMAXGameState = MINGameState.generateSuccessor(ghostID, action)
+                            next_score = self.MinimaxFunction(nextMAXGameState, depth+1)
+                            currentScores.append(next_score)
+                # print "depth: {0}, currentScores: {1}".format(depth, currentScores)
+                if len(currentScores) != 0:
+                    MINScores.append(min(currentScores))
+                else:
+                    MINScores.append(self.evaluationFunction(MINGameState))
+
+        # print "depth: {0}, MINScores: {1}".format(depth, MINScores)
+        bestScore = max(MINScores)
+        bestIndices = [index for index in range(len(MINScores)) if MINScores[index] == bestScore]
+        chosenIndex = random.choice(bestIndices) # Pick randomly among the best
+        actionChosen = MINGameStatesWithAction[chosenIndex][1]
+        
+        if depth == 1:
+            return bestScore, actionChosen
+        else:
+            return bestScore
+
     def getAction(self, gameState):
         """
           Returns the minimax action from the current gameState using self.depth
@@ -157,7 +207,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        self.ghostIDs = range(1, gameState.getNumAgents())
+
+        score, action = self.MinimaxFunction(gameState, 1)
+        print "current score estimated: {0}, suggested action: {1}".format(score, action)
+        return action
+        # return legalMoves[random.randint(0, len(legalMoves)-1)]
+        # util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
