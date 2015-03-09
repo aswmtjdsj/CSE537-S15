@@ -44,6 +44,7 @@ class ReflexAgent(Agent):
 
         # Choose one of the best actions
         scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
+        # print scores
         bestScore = max(scores)
         bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
@@ -73,9 +74,35 @@ class ReflexAgent(Agent):
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-
+        
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        # for ghosts
+        newGhostPositions = [i.getPosition() for i in newGhostStates]
+        newGhostDists = [manhattanDistance(newPos, i) for i in newGhostPositions]
+
+        if 0 not in newScaredTimes and newScaredTimes[0] > 3: # if ghost is scared, then go towards it, but not go too near to it
+            newGhostDistsScore = max(newGhostDists)
+        else:
+            newGhostDistsScore = min(newGhostDists)
+
+        # for food
+        newFoodDis = 0 # initialize with 0, suppose agent eats some food
+        if successorGameState.data._foodEaten == None:
+            newFoodPos = []
+            for (x, row) in enumerate(newFood): # check food position in new state
+                for (y, item) in enumerate(row):
+                    if item == True:
+                        newFoodPos.append((x,y))
+            newFoodDis = sum(map(lambda x: manhattanDistance(x, newPos), newFoodPos))
+            # if newGhostDistsScore > 3: # if ghost is too far, eat food first!
+                # newFoodDis = min(map(lambda x: manhattanDistance(x, newPos), newFoodPos))
+
+        # TODO: hard to deal with multiple ghosts
+
+        return newGhostDistsScore * 1. / (newFoodDis + 0.01) # penalize food distance
+
+        # return newGhostDistsScore * successorGameState.getScore() # incorrect, as state score could be negative
+        # return successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState):
     """
