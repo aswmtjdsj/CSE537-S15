@@ -1,3 +1,5 @@
+1. Time each course is taking place: Course name followed by list of days and times. Example: 
+
 CSE101, Tue, 11:30, Th, 10:00
 CSE101, Mon, 2:30 PM, Wed, 2:30 PM
 CSE102, Tue, 2:30 PM, Th, 2:30 PM
@@ -47,6 +49,9 @@ CSE540, Tue, 2:30 PM, Th, 2:30 PM
 CSE548, Tue, 11:30 AM, Th, 11:30 AM
 CSE549, Tue, 5:30 PM, Th, 5:30 PM
 
+2. Course recitations: Course name followed by list of days and times of recitations (as above)
+Assume each recitation takes 90 minutes.
+
 CSE306, Mon, 2:30 PM
 CSE307, Fri, 4:00 PM
 CSE308, wed, 5:30 PM
@@ -67,6 +72,9 @@ CSE392, Wed, 1:00 PM
 CSE393, Mon, 11:30 AM
 CSE505, Tue, 2:30 PM
 CSE506, Wed, 8:30 AM
+
+3. Course details: Course name followed by number of students enrolled and Boolean value 
+indicating if TA has to attend lectures. Example: 
 
 CSE101, 44, yes
 CSE101, 115, yes
@@ -117,6 +125,9 @@ CSE540, 40, no
 CSE548, 82, yes
 CSE549, 63, yes
 
+4. Course requirements: skills required from a TA of the course: course name followed by a list of 
+skills. Example: 
+
 CSE101, Java, C#, Awesome Hacking Skills
 CSE101, Java, C#, Awesome Hacking Skills, Security, Networking,
 CSE102, C, Python, C#, Networking, Data structures
@@ -134,7 +145,8 @@ CSE301, C#, Awesome Hacking Skills, Security, Networking, Data structures
 CSE303, Java, JavaScript, JSP, Python, C#
 CSE305, C, C++, Java, JavaScript, JSP, Python
 CSE306, C, C++, Java, JavaScript, JSP, Python, C#
-CSE307, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, Data structures
+CSE307, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, 
+Data structures
 CSE308, C, C++, Java
 CSE310, Security, Networking, Data structures
 CSE312, Python, C#, Awesome Hacking Skills, Security, Networking, Data structures
@@ -154,17 +166,25 @@ CSE393, C, C++, Java, JavaScript, JSP, Python, C#
 CSE505, C, C++Python, C#, Data structures
 CSE506, Java, JavaScript, JSP, Python, C#
 CSE509, C, Java, JavaScript, JSP, Python
-CSE527, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, Data structures
-CSE528, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, Data structures
-CSE529, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, Data structures 
+CSE527, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, 
+Data structures
+CSE528, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, 
+Data structures
+CSE529,C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, Data 
+structures 
 CSE530, C#, Awesome Hacking Skills, Security, Networking, Data structures
 CSE532, C#, Awesome Hacking Skills, Security, Networking, Data structures
 CSE533, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security
 CSE535, C, C++, Java, JavaScript, JSP, Python, Security, Networking, Data structures
 CSE537, C, C++, C#, Awesome Hacking Skills, Security, Networking, Data structures
-CSE540, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, Data structures
-CSE548, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, Data structures
+CSE540, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, 
+Data structures
+CSE548, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills, Security, Networking, 
+Data structures
 CSE549, C, Python, Hacking Skills, Security, Networking
+
+5. TA responsibilities: TA name followed by list of days and times of classes TA is taking (no class 
+names). Example:
 
 Mrs. Lauren Smith, Wed, 11:30
 TA1, Mon, 2:30 PM 
@@ -217,6 +237,9 @@ TA47, Mon, 1:00 PM
 TA48, Tue, 1:00 PM
 TA49, Tue, 2:30 PM
 TA50, Tue, 11:30 AM
+
+6. TA skills: skills possessed by each TA: name followed by list of skills.
+Example:
 
 TA1, C, C++, Java, JavaScript
 TA2, Java, JavaScript, JSP, Python

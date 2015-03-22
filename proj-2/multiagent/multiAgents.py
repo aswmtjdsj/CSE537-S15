@@ -154,7 +154,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         if len(legalMoves) == 0:
             return self.evaluationFunction(MAXGameState)
 
-        MINGameStatesWithAction = [(MAXGameState.generatePacmanSuccessor(legalMove), legalMove) for legalMove in legalMoves]
+        MINGameStatesWithAction = [(MAXGameState.generateSuccessor(0, legalMove), legalMove) for legalMove in legalMoves] # I don't know why here, it needs to change from genPac to gen
         MINScores = []
         # print 'MINGameStatesWithAction: {0}'.format(MINGameStatesWithAction)
 
