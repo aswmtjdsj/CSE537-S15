@@ -377,6 +377,7 @@ if __name__ == '__main__':
                             print 'Current TA-course-number: {0}-{1}-{2}'.format(var, TA, TA_num)
                             print 'course assignment: ', assignment
                             print 'TA assignment: ', TA_assigned 
+                            print ''
 
                             # forward checking
                             possible_course_TA_copy = copy.deepcopy(possible_course_TA)
@@ -402,8 +403,8 @@ if __name__ == '__main__':
                                 possible_course_TA_copy[course_checked] = TA_possible
 
                             if go_on == True:
-                                print 'Possible course TA selection: ', possible_course_TA_copy
-                                print ''
+                                # print 'Possible course TA selection: ', possible_course_TA_copy
+                                # print 'go on'
 
                                 result = RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA_copy)
 
@@ -487,7 +488,7 @@ if __name__ == '__main__':
             for key, value in course_assigned.items():
                 print '{0},'.format(key),
                 for TA, num in value:
-                    print '{0}, {1}'.format(TA, num),
+                    print '{0}, {1},'.format(TA, num),
                 print ''
             print ''
         else:
