@@ -236,6 +236,8 @@ if __name__ == '__main__':
             if debug == True:
                 print key, CSP[key]
 
+        print ''
+
         def BacktrackingSearch(csp):
             """
             solving CSP using Backtracking Search
@@ -247,7 +249,6 @@ if __name__ == '__main__':
                 """
                 Recursively solving BS
                 """
-                print 'assignment: ', assignment
                 # test complete
                 if len(assignment) == len(csp) and {x:sum([y[1] for y in assignment[x]]) if len(assignment[x]) != 0 else 0 for x in assignment} == csp:
                     return assignment, TA_assigned # complete assignment
@@ -276,7 +277,14 @@ if __name__ == '__main__':
                                 TA_assigned[TA].append((var, TA_num))
                             else: # TA has not been assigned
                                 TA_assigned[TA] = [(var, TA_num)]
+
+                            print 'Current TA-course-number: {0}-{1}-{2}'.format(var, TA, TA_num)
+                            print 'course assignment: ', assignment
+                            print 'TA assignment: ', TA_assigned 
+                            print ''
+
                             result = RecursiveBS(assignment, TA_assigned, csp)
+
                             if result != None:
                                 return result
                             assignment[var].remove(possible_to_do) # zoo keeping
@@ -286,14 +294,14 @@ if __name__ == '__main__':
 
             return RecursiveBS(assignment, TA_assigned, csp)
 
-        def BacktrackingSearchWithForwardChecking(csp, possible_course_TA, possible_TA_course):
+        def BacktrackingSearchWithForwardChecking(csp, possible_course_TA):
             """
             solving CSP using Backtracking Search, optimized by forward checking
             """
             assignment = {} # sample, 'CSE101': [('TA1', 0.5), ('TA2', 1)]
             TA_assigned = {} # sample, 'TA1': ['CSE101', 0.5), ('CSE537', 0.5)]
 
-            def RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA, possible_TA_course): # assignment involves two parts, course assigned and TA assigned
+            def RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA): # assignment involves two parts, course assigned and TA assigned
                 """
                 Recursively solving BS
                 """
@@ -326,20 +334,30 @@ if __name__ == '__main__':
                                 TA_assigned[TA].append((var, TA_num))
                             else: # TA has not been assigned
                                 TA_assigned[TA] = [(var, TA_num)]
-                            result = RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA, possible_TA_course)
+
+                            # forward checking
+
+                            print 'Current TA-course-number: {0}-{1}-{2}'.format(var, TA, TA_num)
+                            print 'course assignment: ', assignment
+                            print 'TA assignment: ', TA_assigned 
+                            print ''
+
+                            result = RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA)
+
                             if result != None:
                                 return result
+
                             assignment[var].remove(possible_to_do) # zoo keeping
                             TA_assigned[TA].remove((var, TA_num))
 
                 return None # failure
 
-            return RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA, possible_TA_course)
+            return RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA)
 
         if method_name == 'BS':
             result = BacktrackingSearch(CSP)
         elif method_name == 'BS_FC':
-            result = BacktrackingSearchWithForwardChecking(CSP, course_TA_relation, TA_course_relation)
+            result = BacktrackingSearchWithForwardChecking(CSP, course_TA_relation)
         elif method_name == 'BS_FC_CP':
             pass
         else:
