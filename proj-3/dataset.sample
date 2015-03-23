@@ -1,6 +1,5 @@
 1. Time each course is taking place: Course name followed by list of days and times. Example: 
 
-CSE101, Tue, 11:30, Th, 10:00
 CSE101, Mon, 2:30 PM, Wed, 2:30 PM
 CSE102, Tue, 2:30 PM, Th, 2:30 PM
 CSE110, Mon, 1:00 PM, Fri, 1:00 PM
@@ -186,7 +185,7 @@ CSE549, C, Python, Hacking Skills, Security, Networking
 5. TA responsibilities: TA name followed by list of days and times of classes TA is taking (no class 
 names). Example:
 
-Mrs. Lauren Smith, Wed, 11:30
+Mrs. Lauren Smith, Wed, 11:30 PM
 TA1, Mon, 2:30 PM 
 TA2, Wed, 2:30 PM
 TA3, Tue, 2:30 PM
