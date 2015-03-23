@@ -212,7 +212,7 @@ if __name__ == '__main__':
                     TA_course_relation[TA_item.name].append(zip([course_item.course_id]*len(TA_may_assign), TA_may_assign))
                     course_TA_relation[course_item.course_id].append(zip([TA_item.name]*len(TA_may_assign), TA_may_assign))
 
-        if debug == True:
+        if True: #debug == True:
             print '\nTA --- Course'
             for key, value in TA_course_relation.items():
                 print '{0}: {1}, {2}'.format(key, value, len(value))
@@ -239,6 +239,54 @@ if __name__ == '__main__':
         def BacktrackingSearch(csp):
             """
             solving CSP using Backtracking Search
+            """
+            assignment = {} # 'CSE101': [('TA1', 0.5), ('TA2', 1)]
+            TA_assigned = {} # 'TA1': ['CSE101', 0.5), ('CSE537', 0.5)]
+            def RecursiveBS(assignment, TA_assigned, csp): # assignment involves two parts, course assigned and TA assigned
+                """
+                Recursively solving BS
+                """
+                print assignment
+                # test complete
+                if len(assignment) == len(csp) and {x:sum([y[1] for y in assignment[x]]) if len(assignment[x]) != 0 else 0 for x in assignment} == csp:
+                    return assignment, TA_assigned # complete assignment
+                # for each unassigned var in CSP
+                var = ''
+                for key, value in csp.items():
+                    temp = (sum([x[1] for x in assignment[key]]) if key in assignment and len(assignment[key]) != 0 else 0) # find course still needed assignment
+                    if temp < value:
+                        # this var can be assigned
+                        if debug == True:
+                            print key, value, temp
+                        var = key
+                        break
+
+                for possible_TA_assigned in course_TA_relation[var]: # find un-selected vars in CSP graph
+                    for possible_to_do in possible_TA_assigned:
+                        TA, TA_num = possible_to_do # detect consistency
+                        if (sum([x[1] for x in TA_assigned[TA]]) if TA in TA_assigned and len(TA_assigned[TA]) != 0 else 0) + TA_num <= 1 and not (var in [x[0] for x in TA_assigned[TA]] if TA in TA_assigned else []): # the number of course that a TA can be assigned cannot be greater than 1, and a TA cannot be assigned to the same course twice or more
+                            if var in assignment: # course has been in assignment 
+                                assignment[var].append(possible_to_do)
+                            else: # new course assignment
+                                assignment[var] = [possible_to_do]
+
+                            # update TA_assigned
+                            if TA in TA_assigned: # TA has been assigned
+                                TA_assigned[TA].append((var, TA_num))
+                            else: # TA has not been assigned
+                                TA_assigned[TA] = [(var, TA_num)]
+                            result = RecursiveBS(assignment, TA_assigned, csp)
+                            if result != None:
+                                return result
+                            assignment[var].remove(possible_to_do) # zoo keeping
+                            TA_assigned[TA].remove((var, TA_num))
+
+                return None # failure
+            return RecursiveBS(assignment, TA_assigned, csp)
+
+        def BacktrackingSearchWithForwardChecking(csp, possible_course_TA, possible_TA_course):
+            """
+            solving CSP using Backtracking Search, optimized by forward checking
             """
             assignment = {} # 'CSE101': [('TA1', 0.5), ('TA2', 1)]
             TA_assigned = {} # 'TA1': ['CSE101', 0.5), ('CSE537', 0.5)]
@@ -286,7 +334,7 @@ if __name__ == '__main__':
         if method_name == 'BS':
             result = BacktrackingSearch(CSP)
         elif method_name == 'BS_FC':
-            pass
+            result = BacktrackingSearchWithForwardChecking(CSP, course_TA_relation, TA_course_relation)
         elif method_name == 'BS_FC_CP':
             pass
         else:
