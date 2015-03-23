@@ -242,6 +242,7 @@ if __name__ == '__main__':
             """
             assignment = {} # 'CSE101': [('TA1', 0.5), ('TA2', 1)]
             TA_assigned = {} # 'TA1': ['CSE101', 0.5), ('CSE537', 0.5)]
+
             def RecursiveBS(assignment, TA_assigned, csp): # assignment involves two parts, course assigned and TA assigned
                 """
                 Recursively solving BS
@@ -282,15 +283,17 @@ if __name__ == '__main__':
                             TA_assigned[TA].remove((var, TA_num))
 
                 return None # failure
+
             return RecursiveBS(assignment, TA_assigned, csp)
 
         def BacktrackingSearchWithForwardChecking(csp, possible_course_TA, possible_TA_course):
             """
             solving CSP using Backtracking Search, optimized by forward checking
             """
-            assignment = {} # 'CSE101': [('TA1', 0.5), ('TA2', 1)]
-            TA_assigned = {} # 'TA1': ['CSE101', 0.5), ('CSE537', 0.5)]
-            def RecursiveBS(assignment, TA_assigned, csp, possible_course_TA, possible_TA_course): # assignment involves two parts, course assigned and TA assigned
+            assignment = {} # sample, 'CSE101': [('TA1', 0.5), ('TA2', 1)]
+            TA_assigned = {} # sample, 'TA1': ['CSE101', 0.5), ('CSE537', 0.5)]
+
+            def RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA, possible_TA_course): # assignment involves two parts, course assigned and TA assigned
                 """
                 Recursively solving BS
                 """
@@ -309,7 +312,7 @@ if __name__ == '__main__':
                         break
 
                 # TODO: MRV optimization
-                for possible_TA_assigned in course_TA_relation[var]: # find un-selected vars in CSP graph
+                for possible_TA_assigned in possible_course_TA[var]: # find un-selected vars in CSP graph
                     for possible_to_do in possible_TA_assigned:
                         TA, TA_num = possible_to_do # detect consistency
                         if (sum([x[1] for x in TA_assigned[TA]]) if TA in TA_assigned and len(TA_assigned[TA]) != 0 else 0) + TA_num <= 1 and not (var in [x[0] for x in TA_assigned[TA]] if TA in TA_assigned else []): # the number of course that a TA can be assigned cannot be greater than 1, and a TA cannot be assigned to the same course twice or more
@@ -323,14 +326,15 @@ if __name__ == '__main__':
                                 TA_assigned[TA].append((var, TA_num))
                             else: # TA has not been assigned
                                 TA_assigned[TA] = [(var, TA_num)]
-                            result = RecursiveBS(assignment, TA_assigned, csp, possible_course_TA, possible_TA_course)
+                            result = RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA, possible_TA_course)
                             if result != None:
                                 return result
                             assignment[var].remove(possible_to_do) # zoo keeping
                             TA_assigned[TA].remove((var, TA_num))
 
                 return None # failure
-            return RecursiveBS(assignment, TA_assigned, csp)
+
+            return RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA, possible_TA_course)
 
         if method_name == 'BS':
             result = BacktrackingSearch(CSP)
