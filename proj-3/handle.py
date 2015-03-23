@@ -268,6 +268,20 @@ if __name__ == '__main__':
                     for possible_to_do in possible_TA_assigned:
                         TA, TA_num = possible_to_do # detect consistency
                         if (sum([x[1] for x in TA_assigned[TA]]) if TA in TA_assigned and len(TA_assigned[TA]) != 0 else 0) + TA_num <= 1 and not (var in [x[0] for x in TA_assigned[TA]] if TA in TA_assigned else []): # the number of course that a TA can be assigned cannot be greater than 1, and a TA cannot be assigned to the same course twice or more
+
+                            # one more check, all assigned courses cannot be conflict in time
+                            flag = True
+                            if TA in TA_assigned:
+                                for course_id, TA_num in TA_assigned[TA]:
+                                    if course_mapping[var].rec_list != None and course_mapping[course_id].rec_list != None and set(course_mapping[var].rec_list).isdisjoint(set(course_mapping[course_id].rec_list)) == False:
+                                        flag = False
+                                        break
+                                    if course_mapping[var].need_TA == True and course_mapping[course_id].need_TA == True and set(course_mapping[var].time_list).isdisjoint(set(course_mapping[course_id].time_list)) == False:
+                                        flag = False
+                                        break
+                            if flag == False:
+                                continue
+
                             if var in assignment: # course has been in assignment 
                                 assignment[var].append(possible_to_do)
                             else: # new course assignment
@@ -331,6 +345,19 @@ if __name__ == '__main__':
                     for possible_to_do in possible_TA_assigned:
                         TA, TA_num = possible_to_do # detect consistency
                         if (sum([x[1] for x in TA_assigned[TA]]) if TA in TA_assigned and len(TA_assigned[TA]) != 0 else 0) + TA_num <= 1 and not (var in [x[0] for x in TA_assigned[TA]] if TA in TA_assigned else []): # the number of course that a TA can be assigned cannot be greater than 1, and a TA cannot be assigned to the same course twice or more
+                            # one more check, all assigned courses cannot be conflict in time
+                            flag = True
+                            if TA in TA_assigned:
+                                for course_id, TA_num in TA_assigned[TA]:
+                                    if course_mapping[var].rec_list != None and course_mapping[course_id].rec_list != None and set(course_mapping[var].rec_list).isdisjoint(set(course_mapping[course_id].rec_list)) == False:
+                                        flag = False
+                                        break
+                                    if course_mapping[var].need_TA == True and course_mapping[course_id].need_TA == True and set(course_mapping[var].time_list).isdisjoint(set(course_mapping[course_id].time_list)) == False:
+                                        flag = False
+                                        break
+                            if flag == False:
+                                continue
+
                             if var in assignment: # course has been in assignment 
                                 assignment[var].append(possible_to_do)
                             else: # new course assignment
