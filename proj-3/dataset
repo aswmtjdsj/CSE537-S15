@@ -118,9 +118,9 @@ CSE548, 82, yes
 CSE549, 63, yes
 
 CSE101, Java, C#, Awesome Hacking Skills
-CSE101, Java, C#, Awesome Hacking Skills, Security, Networking,
+CSE101, Java, C#, Awesome Hacking Skills, Security, Networking
 CSE102, C, Python, C#, Networking, Data structures
-CSE110, C, C++, Java, JavaScript, JSP, Python, C#,
+CSE110, C, C++, Java, JavaScript, JSP, Python, C#
 CSE114, C, Java, JavaScript, JSP, Python, C#, Hacking Skills, Security, Networking
 CSE130, C#, Awesome Hacking Skills, Security, Networking, Data structures
 CSE150, C, C++, Java, JavaScript, JSP, Python, C#, Awesome Hacking Skills
@@ -236,7 +236,7 @@ TA15, Java, JavaScript, JSP, Python
 TA16, C, Java, JavaScript, JSP
 TA17, C, C++, Java, JavaScript, JSP, Python
 TA18, C, C++, Java
-TA19, C, Java, JavaScript,
+TA19, C, Java, JavaScript
 TA20, JSP, Python
 TA21, C, Python
 TA22, C, C++

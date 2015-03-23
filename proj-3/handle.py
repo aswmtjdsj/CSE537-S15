@@ -162,6 +162,11 @@ if __name__ == '__main__':
                     TA_item.skill_list = skill_list
                     if debug == True:
                         print TA_mapping[TA_item.name]
+            if True: # debug == True:
+                for key, value in course_mapping.items():
+                    print key, value
+                for key, value in TA_mapping.items():
+                    print key, value
 
     except Exception as e:
         raise e
@@ -197,7 +202,7 @@ if __name__ == '__main__':
                 else:
                     TA_may_assign = [0.5, 1]
                 # 4. TA should have all skills required by course
-                if (TA_item.skill_list == None and course_item.require_skills != None) or (TA_item.skill_list != None and course_item.require_skills != None and not set(TA_item.skill_list).issubset(set(course_item.require_skills))):
+                if (TA_item.skill_list == None and course_item.require_skills != None) or (TA_item.skill_list != None and course_item.require_skills != None and not set(course_item.require_skills).issubset(set(TA_item.skill_list))):
                     flag = False
                 # 5. recitation is 90 min long <--- useless?
                 if debug == True and flag == True:
@@ -207,12 +212,12 @@ if __name__ == '__main__':
                     TA_course_relation[TA_item.name].append(zip([course_item.course_id]*len(TA_may_assign), TA_may_assign))
                     course_TA_relation[course_item.course_id].append(zip([TA_item.name]*len(TA_may_assign), TA_may_assign))
 
-        if debug == True:
-            print 'TA --- Course'
+        if True: # debug == True:
+            print '\nTA --- Course'
             for key, value in TA_course_relation.items():
                 print '{0}: {1}, {2}'.format(key, value, len(value))
 
-            print 'Course --- TA'
+            print '\nCourse --- TA'
             for key, value in course_TA_relation.items():
                 print '{0}: {1}, {2}'.format(key, value, len(value))
 
@@ -221,6 +226,89 @@ if __name__ == '__main__':
     
     try:
         # call solving CSP
-        pass
+
+        # suppose every couse needs to be assigned fully with number of TA(s), otherwise failed
+        # without this assumption, this cannot be modeled as CSP
+        # build to_be_assigned_CSP
+        CSP = {} # target to fulfilled
+        for key, value in course_mapping.items():
+            CSP[key] = value.num_TA
+            if debug == True:
+                print key, CSP[key]
+
+        def BacktrackingSearch(csp):
+            """
+            solving CSP using Backtracking Search
+            """
+            assignment = {} # 'CSE101': [('TA1', 0.5), ('TA2', 1)]
+            TA_assigned = {} # 'TA1': ['CSE101', 0.5), ('CSE537', 0.5)]
+            def RecursiveBS(assignment, TA_assigned, csp):
+                """
+                Recursively solving BS
+                """
+                # test complete
+                if len(assignment) == len(csp) and {x:sum([y[1] for y in assignment[x]]) if len(assignment[x]) != 0 else 0 for x in assignment} == csp:
+                    return assignment, TA_assigned # complete assignment
+                # for each unassigned var in CSP
+                var = ''
+                for key, value in csp.items():
+                    temp = (sum([x[1] for x in assignment[key]]) if key in assignment and len(assignment[key]) != 0 else 0)
+                    if temp < value:
+                        # this var can be assigned
+                        if debug == True:
+                            print key, value, temp
+                        var = key
+                        break
+
+                for possible_TA_assigned in course_TA_relation[var]:
+                    for possible_to_do in possible_TA_assigned:
+                        TA, TA_num = possible_to_do
+                        # print (var in [x[0] for x in TA_assigned[TA]] if TA in TA_assigned else [])
+                        # print var in ([x[0] for x in TA_assigned[TA]] if TA in TA_assigned else [])
+                        if (sum([x[1] for x in TA_assigned[TA]]) if TA in TA_assigned and len(TA_assigned[TA]) != 0 else 0) + TA_num <= 1 and not (var in [x[0] for x in TA_assigned[TA]] if TA in TA_assigned else []):
+                            if var in assignment:
+                                assignment[var].append(possible_to_do)
+                            else:
+                                assignment[var] = [possible_to_do]
+                            if TA in TA_assigned:
+                                TA_assigned[TA].append((var, TA_num))
+                            else:
+                                TA_assigned[TA] = [(var, TA_num)]
+                            result = RecursiveBS(assignment, TA_assigned, csp)
+                            if result != None:
+                                return result
+                            assignment[var].remove(possible_to_do)
+                            TA_assigned[TA].remove((var, TA_num))
+
+                return None # failure
+            return RecursiveBS(assignment, TA_assigned, csp)
+
+        if method_name == 'BS':
+            result = BacktrackingSearch(CSP)
+        elif method_name == 'BS_FC':
+            pass
+        elif method_name == 'BS_FC_CP':
+            pass
+        else:
+            result = BacktrackingSearch(CSP)
+        
+        if result != None:
+            print 'Solved!'
+            print result
+            course_assigned, TA_assigned = result
+            for key, value in TA_assigned.items():
+                print '{0},'.format(key),
+                for course, num in value:
+                    print '{0}, {1}'.format(course, num),
+                print ''
+
+            for key, value in course_assigned.items():
+                print '{0},'.format(key),
+                for TA, num in value:
+                    print '{0}, {1}'.format(TA, num),
+                print ''
+        else:
+            print 'Failed. CSP cannot be solved!'
+
     except Exception as e:
         raise e
