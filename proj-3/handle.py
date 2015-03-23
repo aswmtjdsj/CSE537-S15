@@ -37,21 +37,18 @@ class TA:
         """
         return '<{0}>: {{"course taken list": {1}, "skill list": {2}}}'.format(self.name, self.taken_list, self.skill_list)
 
-# data structure re-mapping
-course_mapping = {}
-TA_mapping = {}
-
-# common help variables
-command_help = 'To run this program, you should type {python} ./handle.py [file_name] {{<--method> [method_name]}}'
-method_list = ['BS', 'BS_FC', 'BS_FC_CP', 'ALL']
-data_part_info = ['Time each course is taking place', 'Course recitations', 'Course details', 'Course requirements', 'TA responsibilities', 'TA skills']
-rect_period = 90
-debug = True # whether to print auxillary information
-
 if __name__ == '__main__':
     """
     main function
     """
+
+    # common help variables
+    command_help = 'To run this program, you should type {python} ./handle.py [file_name] {{<--method> [method_name]}}'
+    method_list = ['BS', 'BS_FC', 'BS_FC_CP', 'ALL']
+    data_part_info = ['Time each course is taking place', 'Course recitations', 'Course details', 'Course requirements', 'TA responsibilities', 'TA skills']
+    rect_period = 90
+    debug = True # whether to print auxillary information
+
     print 'Parsing command options ...'.format(sys.argv)
     method_name = ''
     file_name = ''
@@ -82,12 +79,16 @@ if __name__ == '__main__':
         exit()
     
     try:
+        # data structure for re-mapping
+        course_mapping = {}
+        TA_mapping = {}
+
         # parse data file
         data_cnt = 0
         TA_list = []
         print 'Parsing data file {0} ...'.format(file_name)
         with open(file_name) as data_file:
-            if debug:
+            if debug == True:
                 print '{0}. {1}:'.format(data_cnt + 1, data_part_info[data_cnt])
             for line in data_file:
                 # handle new line to parse different parts of data file
@@ -106,7 +107,7 @@ if __name__ == '__main__':
                     time = data[2::2]
                     course_item.time_list = zip(day, time)
                     course_mapping[course_item.course_id] = course_item
-                    if debug:
+                    if debug == True:
                         print course_mapping[course_item.course_id]
 
                 elif data_cnt == 1:
@@ -115,7 +116,7 @@ if __name__ == '__main__':
                     day = data[1::2]
                     time = data[2::2]
                     course_item.rec_list = zip(day, time)
-                    if debug:
+                    if debug == True:
                         print course_mapping[course_item.course_id]
 
                 elif data_cnt == 2:
@@ -131,7 +132,7 @@ if __name__ == '__main__':
                         course_item.num_TA = 1.5
                     else:
                         course_item.num_TA = 2
-                    if debug:
+                    if debug == True:
                         print course_mapping[course_item.course_id]
 
                 elif data_cnt == 3:
@@ -149,7 +150,7 @@ if __name__ == '__main__':
                     time = data[2::2]
                     TA_item.taken_list = zip(day, time)
                     TA_mapping[TA_item.name] = TA_item
-                    if debug:
+                    if debug == True:
                         print TA_mapping[TA_item.name]
 
                 else:
@@ -157,7 +158,7 @@ if __name__ == '__main__':
                     TA_item = TA_mapping[data[0]]
                     skill_list = data[1:]
                     TA_item.skill_list = skill_list
-                    if debug:
+                    if debug == True:
                         print TA_mapping[TA_item.name]
 
     except Exception as e:
@@ -165,6 +166,53 @@ if __name__ == '__main__':
 
     try:
         # build CSP
-        pass
+        TA_course_relation = {}
+        course_TA_relation = {}
+        for course_item in course_mapping.values():
+            if course_item.course_id not in course_TA_relation:
+                course_TA_relation[course_item.course_id] = []
+            for TA_item in TA_mapping.values():
+                if TA_item.name not in TA_course_relation:
+                    TA_course_relation[TA_item.name] = []
+                # constraints
+                flag = True # suppose this TA can be assigned to this course
+                # 1. TA should have free time during course recitation
+                if TA_item.taken_list != None:
+                    if course_item.rec_list != None:
+                        for taken_time in TA_item.taken_list:
+                            if taken_time in course_item.rec_list:
+                                flag = False
+                                break
+                    # 2. TA should have free time during course time if course need TA
+                    if course_item.need_TA == True:
+                        for taken_time in TA_item.taken_list:
+                            if taken_time in course_item.time_list:
+                                flag = False
+                                break
+                # 3. course num_TA
+                if course_item.num_TA < 1:
+                    TA_may_assign = [0.5]
+                else:
+                    TA_may_assign = [0.5, 1]
+                # 4. TA should have all skills required by course
+                if (TA_item.skill_list == None and course_item.require_skills != None) or (TA_item.skill_list != None and course_item.require_skills != None and not set(TA_item.skill_list).issubset(set(course_item.require_skills))):
+                    flag = False
+                # 5. recitation is 90 min long <--- useless?
+                if debug == True and flag == True:
+                    print course_item.course_id, TA_item.name
+                # according to flag, to decide possible assignment
+                if flag == True:
+                    TA_course_relation[TA_item.name].append(zip([course_item.course_id]*len(TA_may_assign), TA_may_assign))
+                    course_TA_relation[course_item.course_id].append(zip([TA_item.name]*len(TA_may_assign), TA_may_assign))
+
+        if debug == True:
+            print 'TA --- Course'
+            for key, value in TA_course_relation.items():
+                print '{0}: {1}, {2}'.format(key, value, len(value))
+
+            print 'Course --- TA'
+            for key, value in course_TA_relation.items():
+                print '{0}: {1}, {2}'.format(key, value, len(value))
+
     except Exception as e:
         raise e
