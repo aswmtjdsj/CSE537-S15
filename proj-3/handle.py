@@ -385,19 +385,43 @@ if __name__ == '__main__':
 
             return RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA)
 
-        def AC3(csp):
+        def AC3(course_constraints):
             """
             solving CSP using Constraint Propagation, return a reduced CSP
             """
-            return csp
+            queue = []
+            for i, course_id in enumerate(course_constraints):
+                for j, course_jd in enumerate(course_constraints):
+                    if j <= i:
+                        continue
+                    # print i, j, course_id, course_jd
+                    queue.append((course_id, course_jd))
+
+            while len(queue) != 0:
+                front = queue.pop(0)
+
+                def rmInconsistenValues(course_constraints, x_i, x_j):
+                    removed = False
+                    # TODO
+                    # print 'biu', x_i, x_j
+                    # print 'c', course_constraints[x_i], course_constraints[x_j]
+
+                    return removed
+
+                if rmInconsistenValues(course_constraints, front[0], front[1]) == True:
+                    for course_kd in csp:
+                        if course_kd != x_i:
+                            queue.append((x_i, course_kd))
+
+            return course_constraints
 
         if method_name == 'BS':
             result = BacktrackingSearch(CSP)
         elif method_name == 'BS_FC':
             result = BacktrackingSearchWithForwardChecking(CSP, course_TA_relation)
         elif method_name == 'CP':
-            reduced_CSP = AC3(CSP)
-            result = BacktrackingSearchWithForwardChecking(reduced_CSP, course_TA_relation)
+            reduced_course_constraints = AC3(course_TA_relation)
+            result = BacktrackingSearchWithForwardChecking(CSP, reduced_course_constraints)
         
         if result != None:
             print '\nSolved!\n'
