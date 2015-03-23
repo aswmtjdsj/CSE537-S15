@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, copy
 
 class Course:
     """
@@ -301,6 +301,12 @@ if __name__ == '__main__':
             assignment = {} # sample, 'CSE101': [('TA1', 0.5), ('TA2', 1)]
             TA_assigned = {} # sample, 'TA1': ['CSE101', 0.5), ('CSE537', 0.5)]
 
+            print 'BS_FC init'
+            print 'course assignment: ', assignment
+            print 'TA assignment: ', TA_assigned 
+            print 'Possible course TA selection: ', possible_course_TA
+            print ''
+
             def RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA): # assignment involves two parts, course assigned and TA assigned
                 """
                 Recursively solving BS
@@ -336,13 +342,31 @@ if __name__ == '__main__':
                                 TA_assigned[TA] = [(var, TA_num)]
 
                             # forward checking
+                            possible_course_TA_copy = copy.deepcopy(possible_course_TA)
+                            for course_checked, TA_possible in possible_course_TA_copy.items():
+                                if course_checked in assignment :#and sum([y[1] for y in assignment[course_checked]]) < csp[course_checked]:
+                                    for i, TA_separate_possible in enumerate(TA_possible):
+                                        TA_separate_possible = [(x[0], x[1] - TA_num if x[0] == TA else x[1]) for x in TA_separate_possible]
+                                        TA_separate_possible = filter(lambda x: x[1] > 0, TA_separate_possible)
+                                        TA_possible[i] = TA_separate_possible
+
+                                    TA_possible = filter(lambda x: x != None and x != [] and len(x) != 0, TA_possible)
+
+                                    # print course_checked, sum([max(map(lambda y: y[1], x)) for x in TA_possible])
+                                    # elinimation in advance, when no values can be selected for some var
+                                    if sum([max(map(lambda y: y[1], x)) for x in TA_possible]) == 0:
+                                        return None
+
+                                    possible_course_TA_copy[course_checked] = TA_possible
+                            print possible_course_TA_copy
 
                             print 'Current TA-course-number: {0}-{1}-{2}'.format(var, TA, TA_num)
                             print 'course assignment: ', assignment
                             print 'TA assignment: ', TA_assigned 
+                            print 'Possible course TA selection: ', possible_course_TA_copy
                             print ''
 
-                            result = RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA)
+                            result = RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA_copy)
 
                             if result != None:
                                 return result
