@@ -437,7 +437,7 @@ if __name__ == '__main__':
                             flag = False
                             for pos_TA_j in course_constraints[x_j]:
                                 for pos_TA_j_j, TA_num_j in pos_TA_j:
-                                    if not(pos_TA_i_i == pos_TA_j_j and (1 - TA_num_i) < TA_num_j):
+                                    if not(pos_TA_i_i == pos_TA_j_j and (((1 - TA_num_i) < TA_num_j) or (course_mapping[x_i].rec_list != None and course_mapping[x_j].rec_list != None and set(course_mapping[x_i].rec_list).isdisjoint(set(course_mapping[x_j].rec_list)) == False) or (course_mapping[x_i].need_TA == True and course_mapping[x_j].need_TA == True and set(course_mapping[x_i].time_list).isdisjoint(set(course_mapping[x_j].time_list)) == False))): # two courses can(not) be assigned with the same TA
                                         flag = True
                                     # else:
                                     #     print pos_TA_i_i, TA_num_i, pos_TA_j_j, TA_num_j
