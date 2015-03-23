@@ -1,0 +1,41 @@
+Parsing command options ...
+Method chosen: CP
+Parsing data file data.1 ...
+
+TA --- Course
+Mrs. Lauren Smith: [[('CSE101', 0.5), ('CSE101', 1)]], 1
+Mrs. Lauren Paul: [[('CSE101', 0.5), ('CSE101', 1)]], 1
+
+Course --- TA
+CSE101: [[('Mrs. Lauren Paul', 0.5), ('Mrs. Lauren Paul', 1)], [('Mrs. Lauren Smith', 0.5), ('Mrs. Lauren Smith', 1)]], 2
+
+Before CP {'CSE101': [[('Mrs. Lauren Paul', 0.5), ('Mrs. Lauren Paul', 1)], [('Mrs. Lauren Smith', 0.5), ('Mrs. Lauren Smith', 1)]]}
+After CP {'CSE101': [[('Mrs. Lauren Paul', 0.5), ('Mrs. Lauren Paul', 1)], [('Mrs. Lauren Smith', 0.5), ('Mrs. Lauren Smith', 1)]]}
+BS_FC init
+course assignment:  {}
+TA assignment:  {}
+Possible course TA selection:  {'CSE101': [[('Mrs. Lauren Paul', 0.5), ('Mrs. Lauren Paul', 1)], [('Mrs. Lauren Smith', 0.5), ('Mrs. Lauren Smith', 1)]]}
+
+Current TA-course-number: CSE101-Mrs. Lauren Paul-0.5
+course assignment:  {'CSE101': [('Mrs. Lauren Paul', 0.5)]}
+TA assignment:  {'Mrs. Lauren Paul': [('CSE101', 0.5)]}
+Possible course TA selection:  {'CSE101': [[('Mrs. Lauren Paul', 0.5)], [('Mrs. Lauren Smith', 0.5), ('Mrs. Lauren Smith', 1)]]}
+
+Current TA-course-number: CSE101-Mrs. Lauren Smith-0.5
+course assignment:  {'CSE101': [('Mrs. Lauren Paul', 0.5), ('Mrs. Lauren Smith', 0.5)]}
+TA assignment:  {'Mrs. Lauren Smith': [('CSE101', 0.5)], 'Mrs. Lauren Paul': [('CSE101', 0.5)]}
+Possible course TA selection:  {'CSE101': [[('Mrs. Lauren Paul', 0.5)], [('Mrs. Lauren Smith', 0.5)]]}
+
+Current TA-course-number: CSE101-Mrs. Lauren Smith-1
+course assignment:  {'CSE101': [('Mrs. Lauren Paul', 0.5), ('Mrs. Lauren Smith', 1)]}
+TA assignment:  {'Mrs. Lauren Smith': [('CSE101', 1)], 'Mrs. Lauren Paul': [('CSE101', 0.5)]}
+Possible course TA selection:  {'CSE101': [[('Mrs. Lauren Paul', 0.5)], [('Mrs. Lauren Smith', 1), ('Mrs. Lauren Smith', 1)]]}
+
+
+Solved!
+
+Mrs. Lauren Smith, CSE101, 1 
+Mrs. Lauren Paul, CSE101, 0.5 
+
+CSE101, Mrs. Lauren Paul, 0.5 Mrs. Lauren Smith, 1 
+
