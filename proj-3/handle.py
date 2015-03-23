@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     # common help variables
     command_help = 'To run this program, you should type {python} ./handle.py [file_name] {{<--method> [method_name]}}'
-    method_list = ['BS', 'BS_FC', 'BS_FC_CP', 'ALL']
+    method_list = ['BS', 'BS_FC', 'CP']
     data_part_info = ['Time each course is taking place', 'Course recitations', 'Course details', 'Course requirements', 'TA responsibilities', 'TA skills']
     rect_period = 90
     debug = False # whether to print auxillary information
@@ -71,7 +71,8 @@ if __name__ == '__main__':
                     if method_name not in method_list:
                         raise Exception('No such method {0}'.format(method_name))
         else:
-            method_opt = method_list[-1]
+            method_name = method_list[-1]
+        print 'Method chosen: {0}'.format(method_name)
 
     except Exception as e:
         print e
@@ -384,19 +385,19 @@ if __name__ == '__main__':
 
             return RecursiveBS_FC(assignment, TA_assigned, csp, possible_course_TA)
 
+        def AC3(csp):
+            """
+            solving CSP using Constraint Propagation, return a reduced CSP
+            """
+            return csp
+
         if method_name == 'BS':
             result = BacktrackingSearch(CSP)
         elif method_name == 'BS_FC':
             result = BacktrackingSearchWithForwardChecking(CSP, course_TA_relation)
-        elif method_name == 'BS_FC_CP':
-            pass
-        else:
-            result_1 = BacktrackingSearch(CSP)
-            result_2 = BacktrackingSearchWithForwardChecking(CSP, course_TA_relation)
-            if result_1 != result_2:
-                raise Exception('Different answer, something wrong!')
-            else:
-                result = result_2
+        elif method_name == 'CP':
+            reduced_CSP = AC3(CSP)
+            result = BacktrackingSearchWithForwardChecking(reduced_CSP, course_TA_relation)
         
         if result != None:
             print '\nSolved!\n'
