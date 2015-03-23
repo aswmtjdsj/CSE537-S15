@@ -392,7 +392,7 @@ if __name__ == '__main__':
             queue = []
             for i, course_id in enumerate(course_constraints):
                 for j, course_jd in enumerate(course_constraints):
-                    if j <= i:
+                    if j == i:
                         continue
                     # print i, j, course_id, course_jd
                     queue.append((course_id, course_jd))
@@ -405,6 +405,23 @@ if __name__ == '__main__':
                     # TODO
                     # print 'biu', x_i, x_j
                     # print 'c', course_constraints[x_i], course_constraints[x_j]
+                    for i, pos_TA_i in enumerate(course_constraints[x_i]):
+                        for pos_TA_i_i, TA_num_i in pos_TA_i:
+                            flag = False
+                            for pos_TA_j in course_constraints[x_j]:
+                                for pos_TA_j_j, TA_num_j in pos_TA_j:
+                                    if not(pos_TA_i_i == pos_TA_j_j and (1 - TA_num_i) < TA_num_j):
+                                        flag = True
+                                    # else:
+                                    #     print pos_TA_i_i, TA_num_i, pos_TA_j_j, TA_num_j
+                            if flag == False:
+                                # print 'CPed'
+                                # print x_i
+                                # print course_constraints[x_i]
+                                # print (pos_TA_i_i, TA_num_i)
+                                course_constraints[x_i][i].remove((pos_TA_i_i, TA_num_i))
+                    course_constraints[x_i] = filter(lambda x: len(x) != 0, course_constraints[x_i])
+                    # print course_constraints[x_i]
 
                     return removed
 
@@ -420,7 +437,9 @@ if __name__ == '__main__':
         elif method_name == 'BS_FC':
             result = BacktrackingSearchWithForwardChecking(CSP, course_TA_relation)
         elif method_name == 'CP':
+            print 'Before CP', course_TA_relation
             reduced_course_constraints = AC3(course_TA_relation)
+            print 'After CP', reduced_course_constraints
             result = BacktrackingSearchWithForwardChecking(CSP, reduced_course_constraints)
         
         if result != None:
