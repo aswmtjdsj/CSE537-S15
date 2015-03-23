@@ -47,7 +47,7 @@ if __name__ == '__main__':
     method_list = ['BS', 'BS_FC', 'BS_FC_CP', 'ALL']
     data_part_info = ['Time each course is taking place', 'Course recitations', 'Course details', 'Course requirements', 'TA responsibilities', 'TA skills']
     rect_period = 90
-    debug = True # whether to print auxillary information
+    debug = False # whether to print auxillary information
 
     print 'Parsing command options ...'.format(sys.argv)
     method_name = ''
@@ -94,7 +94,8 @@ if __name__ == '__main__':
                 # handle new line to parse different parts of data file
                 if line == '\n':
                     data_cnt += 1
-                    print '\n{0}. {1}:'.format(data_cnt + 1, data_part_info[data_cnt])
+                    if debug == True:
+                        print '\n{0}. {1}:'.format(data_cnt + 1, data_part_info[data_cnt])
                     continue
                 data = line.strip('\n,').split(', ')
                 # print data
@@ -140,7 +141,8 @@ if __name__ == '__main__':
                     course_item = course_mapping[data[0]]
                     requirement_list = data[1:]
                     course_item.require_skills = requirement_list
-                    print course_mapping[course_item.course_id]
+                    if debug == True:
+                        print course_mapping[course_item.course_id]
 
                 elif data_cnt == 4:
                     # handle TA responsibilities 
@@ -214,5 +216,11 @@ if __name__ == '__main__':
             for key, value in course_TA_relation.items():
                 print '{0}: {1}, {2}'.format(key, value, len(value))
 
+    except Exception as e:
+        raise e
+    
+    try:
+        # call solving CSP
+        pass
     except Exception as e:
         raise e
