@@ -246,7 +246,7 @@ if __name__ == '__main__':
                 """
                 Recursively solving BS
                 """
-                print assignment
+                print 'assignment: ', assignment
                 # test complete
                 if len(assignment) == len(csp) and {x:sum([y[1] for y in assignment[x]]) if len(assignment[x]) != 0 else 0 for x in assignment} == csp:
                     return assignment, TA_assigned # complete assignment
