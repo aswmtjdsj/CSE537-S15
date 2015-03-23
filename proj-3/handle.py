@@ -162,7 +162,7 @@ if __name__ == '__main__':
                     TA_item.skill_list = skill_list
                     if debug == True:
                         print TA_mapping[TA_item.name]
-            if True: # debug == True:
+            if debug == True:
                 for key, value in course_mapping.items():
                     print key, value
                 for key, value in TA_mapping.items():
@@ -212,7 +212,7 @@ if __name__ == '__main__':
                     TA_course_relation[TA_item.name].append(zip([course_item.course_id]*len(TA_may_assign), TA_may_assign))
                     course_TA_relation[course_item.course_id].append(zip([TA_item.name]*len(TA_may_assign), TA_may_assign))
 
-        if True: # debug == True:
+        if debug == True:
             print '\nTA --- Course'
             for key, value in TA_course_relation.items():
                 print '{0}: {1}, {2}'.format(key, value, len(value))
@@ -242,7 +242,7 @@ if __name__ == '__main__':
             """
             assignment = {} # 'CSE101': [('TA1', 0.5), ('TA2', 1)]
             TA_assigned = {} # 'TA1': ['CSE101', 0.5), ('CSE537', 0.5)]
-            def RecursiveBS(assignment, TA_assigned, csp):
+            def RecursiveBS(assignment, TA_assigned, csp): # assignment involves two parts, course assigned and TA assigned
                 """
                 Recursively solving BS
                 """
@@ -252,7 +252,7 @@ if __name__ == '__main__':
                 # for each unassigned var in CSP
                 var = ''
                 for key, value in csp.items():
-                    temp = (sum([x[1] for x in assignment[key]]) if key in assignment and len(assignment[key]) != 0 else 0)
+                    temp = (sum([x[1] for x in assignment[key]]) if key in assignment and len(assignment[key]) != 0 else 0) # find course still needed assignment
                     if temp < value:
                         # this var can be assigned
                         if debug == True:
@@ -260,24 +260,24 @@ if __name__ == '__main__':
                         var = key
                         break
 
-                for possible_TA_assigned in course_TA_relation[var]:
+                for possible_TA_assigned in course_TA_relation[var]: # find un-selected vars in CSP graph
                     for possible_to_do in possible_TA_assigned:
-                        TA, TA_num = possible_to_do
-                        # print (var in [x[0] for x in TA_assigned[TA]] if TA in TA_assigned else [])
-                        # print var in ([x[0] for x in TA_assigned[TA]] if TA in TA_assigned else [])
-                        if (sum([x[1] for x in TA_assigned[TA]]) if TA in TA_assigned and len(TA_assigned[TA]) != 0 else 0) + TA_num <= 1 and not (var in [x[0] for x in TA_assigned[TA]] if TA in TA_assigned else []):
-                            if var in assignment:
+                        TA, TA_num = possible_to_do # detect consistency
+                        if (sum([x[1] for x in TA_assigned[TA]]) if TA in TA_assigned and len(TA_assigned[TA]) != 0 else 0) + TA_num <= 1 and not (var in [x[0] for x in TA_assigned[TA]] if TA in TA_assigned else []): # the number of course that a TA can be assigned cannot be greater than 1, and a TA cannot be assigned to the same course twice or more
+                            if var in assignment: # course has been in assignment 
                                 assignment[var].append(possible_to_do)
-                            else:
+                            else: # new course assignment
                                 assignment[var] = [possible_to_do]
-                            if TA in TA_assigned:
+
+                            # update TA_assigned
+                            if TA in TA_assigned: # TA has been assigned
                                 TA_assigned[TA].append((var, TA_num))
-                            else:
+                            else: # TA has not been assigned
                                 TA_assigned[TA] = [(var, TA_num)]
                             result = RecursiveBS(assignment, TA_assigned, csp)
                             if result != None:
                                 return result
-                            assignment[var].remove(possible_to_do)
+                            assignment[var].remove(possible_to_do) # zoo keeping
                             TA_assigned[TA].remove((var, TA_num))
 
                 return None # failure
@@ -293,8 +293,7 @@ if __name__ == '__main__':
             result = BacktrackingSearch(CSP)
         
         if result != None:
-            print 'Solved!'
-            print result
+            print '\nSolved!\n'
             course_assigned, TA_assigned = result
             for key, value in TA_assigned.items():
                 print '{0},'.format(key),
@@ -302,12 +301,15 @@ if __name__ == '__main__':
                     print '{0}, {1}'.format(course, num),
                 print ''
 
+            print ''
             for key, value in course_assigned.items():
                 print '{0},'.format(key),
                 for TA, num in value:
                     print '{0}, {1}'.format(TA, num),
                 print ''
+            print ''
         else:
+            print ''
             print 'Failed. CSP cannot be solved!'
 
     except Exception as e:
