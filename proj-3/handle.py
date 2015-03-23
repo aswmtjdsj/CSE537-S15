@@ -327,7 +327,12 @@ if __name__ == '__main__':
                 Recursively solving BS
                 """
                 # test complete
-                if len(assignment) == len(csp) and {x:sum([y[1] for y in assignment[x]]) if len(assignment[x]) != 0 else 0 for x in assignment} == csp:
+                temp_csp = {}
+                for x in csp:
+                    if csp[x] != 0:
+                        temp_csp[x] = csp[x]
+
+                if len(assignment) == len(temp_csp) and {x:sum([y[1] for y in assignment[x]]) if len(assignment[x]) != 0 else 0 for x in assignment} == temp_csp:
                     return assignment, TA_assigned # complete assignment
                 # for each unassigned var in CSP
                 var = ''
