@@ -83,8 +83,10 @@ if __name__ == '__main__':
     for i in train_items:
         for j in i.freq:
             if j not in prior_word_in_class_count[i.label]:
+                # prior_word_in_class_count[i.label][j] = i.freq[j]
                 prior_word_in_class_count[i.label][j] = 1
             else:
+                # prior_word_in_class_count[i.label][j] += i.freq[j]
                 prior_word_in_class_count[i.label][j] += 1
 
     for i in prior_word_in_class_count:
@@ -97,67 +99,103 @@ if __name__ == '__main__':
     # test stage
     # calc P(C|W) = P(W|C) * P(C) / P(W)
     # P(W|C) = PI(P(Wi|C)), P(W) = PI(P(Wi))
+
     correct = 0
     for i in test_items:
-        p_w_c = 1.
-        log_p_w_c = math.log(p_w_c)
-        p_c = prior_class['spam']
-        p_w = 1.
-        log_p_w = math.log(p_w)
-        cnt = 0
+        biu = math.log(prior_class['spam'] / prior_class['ham'])
         for j in i.freq:
             if j in prior_word and j in prior_word_in_class['spam']:
-                cnt += 1
-                #p_w_c *= prior_word_in_class['spam'][j]
-                # log_p_w_c += math.log(prior_word_in_class['spam'][j])
-                log_p_w_c += math.log(prior_word_in_class['spam'][j] * p_c)
-                #p_w *= prior_word[j]
-                # log_p_w += math.log(prior_word[j])
-                log_p_w += math.log(prior_word_in_class['spam'][j] * prior_class['spam'] + prior_word_in_class['ham'][j] * prior_class['ham'])
-        #prob = p_w_c * p_c / p_w
-        # prob = math.exp(log_p_w_c + math.log(p_c) - log_p_w)
-        prob = math.exp(log_p_w_c - log_p_w)
-        if prob > 0.9:
+                biu += math.log(prior_word_in_class['spam'][j] / prior_word_in_class['ham'][j])
+        # print i.label, math.exp(a), math.exp(b), prob
+        if biu > 0: 
             if i.label == 'spam':
                 correct += 1
         else:
             if i.label == 'ham':
                 correct += 1
-        print i.label, math.exp(log_p_w_c), math.exp(log_p_w), prob
     print 'correct rate: ' + str(correct * 1. / len(test_items))
 
-    pass
-    correct = 0
-    for i in test_items:
-        log_p_w_c = math.log(p_w_c)
-        p_c = prior_class['spam']
-        log_p_w = math.log(p_w)
-        cnt = 0
-        a = 0.
-        b = 0.
-        for j in i.freq:
-            if j in prior_word and j in prior_word_in_class['spam']:
-                cnt += 1
-                log_p_w_c += math.log(prior_word_in_class['spam'][j])
-                log_p_w += math.log(prior_word[j])
-                log_p_c_w = math.log(prior_word_in_class['spam'][j] * p_c / prior_word[j])
-                a += log_p_c_w
-                if math.exp(log_p_c_w) > 1:
-                    print prior_word_in_class_count['spam'][j]
-                    print p_c
-                    print prior_word_in_class['spam'][j]
-                    print prior_word_count[j]
-                    print prior_word[j]
-                    print math.exp(log_p_c_w)
-                b += math.log((1 - math.exp(log_p_c_w)))
-        a += math.log(p_c)
-        b += math.log(1 - p_c)
-        prob = math.exp(a) / (math.exp(a) + math.exp(b))
-        # prob = math.exp(log_p_w_c + math.log(p_c) - log_p_w)
-        if prob > 0.9:
-            if i.label == 'spam':
-                correct += 1
-        else:
-            if i.label == 'ham':
-                correct += 1
-    print correct * 1. / len(test_items)
+    # correct = 0
+    # for i in test_items:
+    #     a = 0.
+    #     b = 0.
+    #     for j in i.freq:
+    #         if j in prior_word and j in prior_word_in_class['spam']:
+    #             p = prior_word_in_class['spam'][j] * prior_class['spam'] / (prior_word_in_class['spam'][j] * prior_class['spam'] + prior_word_in_class['ham'][j] * prior_class['ham'])
+    #             a += math.log(p)
+    #             b += math.log(1 - p)
+    #     a += math.log(prior_class['spam'])
+    #     b += math.log(prior_class['ham'])
+    #     prob = math.exp(a) / (math.exp(a) + math.exp(b))
+    #     print i.label, math.exp(a), math.exp(b), prob
+    #     if prob > 0.95:
+    #         if i.label == 'spam':
+    #             correct += 1
+    #     else:
+    #         if i.label == 'ham':
+    #             correct += 1
+    # print 'correct rate: ' + str(correct * 1. / len(test_items))
+
+    # correct = 0
+    # for i in test_items:
+    #     p_w_c = 1.
+    #     log_p_w_c = math.log(p_w_c)
+    #     p_c = prior_class['spam']
+    #     p_w = 1.
+    #     log_p_w = math.log(p_w)
+    #     cnt = 0
+    #     for j in i.freq:
+    #         if j in prior_word and j in prior_word_in_class['spam']:
+    #             cnt += 1
+    #             #p_w_c *= prior_word_in_class['spam'][j]
+    #             # log_p_w_c += math.log(prior_word_in_class['spam'][j])
+    #             log_p_w_c += math.log(prior_word_in_class['spam'][j] * p_c)
+    #             #p_w *= prior_word[j]
+    #             # log_p_w += math.log(prior_word[j])
+    #             log_p_w += math.log(prior_word_in_class['spam'][j] * prior_class['spam'] + prior_word_in_class['ham'][j] * prior_class['ham'])
+    #     #prob = p_w_c * p_c / p_w
+    #     # prob = math.exp(log_p_w_c + math.log(p_c) - log_p_w)
+    #     prob = math.exp(log_p_w_c - log_p_w)
+    #     if prob > 0.9:
+    #         if i.label == 'spam':
+    #             correct += 1
+    #     else:
+    #         if i.label == 'ham':
+    #             correct += 1
+    #     print i.label, math.exp(log_p_w_c), math.exp(log_p_w), prob
+    # print 'correct rate: ' + str(correct * 1. / len(test_items))
+
+    # correct = 0
+    # for i in test_items:
+    #     log_p_w_c = math.log(p_w_c)
+    #     p_c = prior_class['spam']
+    #     log_p_w = math.log(p_w)
+    #     cnt = 0
+    #     a = 0.
+    #     b = 0.
+    #     for j in i.freq:
+    #         if j in prior_word and j in prior_word_in_class['spam']:
+    #             cnt += 1
+    #             log_p_w_c += math.log(prior_word_in_class['spam'][j])
+    #             log_p_w += math.log(prior_word[j])
+    #             log_p_c_w = math.log(prior_word_in_class['spam'][j] * p_c / prior_word[j])
+    #             a += log_p_c_w
+    #             if math.exp(log_p_c_w) > 1:
+    #                 print prior_word_in_class_count['spam'][j]
+    #                 print p_c
+    #                 print prior_word_in_class['spam'][j]
+    #                 print prior_word_count[j]
+    #                 print prior_word[j]
+    #                 print math.exp(log_p_c_w)
+    #             b += math.log((1 - math.exp(log_p_c_w)))
+    #     a += math.log(p_c)
+    #     b += math.log(1 - p_c)
+    #     prob = math.exp(a) / (math.exp(a) + math.exp(b))
+    #     # prob = math.exp(log_p_w_c + math.log(p_c) - log_p_w)
+    #     if prob > 0.9:
+    #         if i.label == 'spam':
+    #             correct += 1
+    #     else:
+    #         if i.label == 'ham':
+    #             correct += 1
+    # print correct * 1. / len(test_items)
