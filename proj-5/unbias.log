@@ -1,0 +1,59 @@
+p = 0.05
+load done
+tree size: 40000
+train done
+internal node: 5300, leaf node: 13343
+chi square test done
+internal node: 56, leaf node: 309
+
+test on train data
+
+38801 1199 0
+[32193, 7807]
+32628 40000 0.8157
+
+test on test data
+
+14465 533 2
+[8708, 6292]
+8801 15000 0.586733333333
+
+p = 0.01
+load done
+tree size: 40000
+train done
+internal node: 5300, leaf node: 13343
+chi square test done
+internal node: 15, leaf node: 120
+
+test on train data
+
+38883 1117 0
+[32193, 7807]
+32466 40000 0.81165
+
+test on test data
+
+14573 427 0
+[8708, 6292]
+8799 15000 0.5866
+
+p = 1.00
+load done
+tree size: 40000
+train done
+internal node: 5300, leaf node: 13343
+chi square test done
+internal node: 5300, leaf node: 13343
+
+test on train data
+
+33091 5921 988
+[32193, 7807]
+37458 40000 0.93645
+
+test on test data
+
+11900 2653 447
+[8708, 6292]
+8046 15000 0.5364
