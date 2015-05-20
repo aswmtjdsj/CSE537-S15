@@ -1,5 +1,8 @@
 import os, sys
 import math
+import random
+import chi2
+from decimal import Decimal, getcontext
 
 NODE_TYPE = ['DS', 'LS', 'ES', 'MIG'] # all data same, all label same, early stopped, maximum information gain
 
@@ -25,13 +28,15 @@ class DecisionTree():
     '''
     Decision Tree Class
     '''
-    def __init__(self):
+    def __init__(self, p_thre):
         self.train_data = []
 
         self.size = None
 
         self.dimension = None
         self.root = None
+
+        self.p_threshold = p_thre
 
         self.debug = True
 
@@ -134,23 +139,65 @@ class DecisionTree():
         node.node_type = NODE_TYPE[3]
         return node
 
+    def chi(self):
+        if self.root == None:
+            raise Exception('No tree trained yet!')
+
+        result = None
+        if self.root.node_type == 'MIG' and self._chi(self.root) == True:
+            self.root.node_type = 'ES'
+            self.root.label = False if self.root.split[0] > self.root.split[1] else True
+            self.root.children = None
+
+    def _chi(self, node):
+        if node.children != None:
+            for i in range(len(node.children)):
+                if node.children[i].node_type == 'MIG' and self._chi(node.children[i]) == True:
+                    node.children[i].node_type = 'ES'
+                    node.children[i].label = False if node.children[i].split[0] > node.children[i].split[1] else True
+                    node.children[i].children = None
+
+            n = node.split[0] * 1.
+            p = node.split[1] * 1.
+            N = n + p
+            s = Decimal('0.')
+            for i in range(len(node.children)):
+                _p = Decimal(sum(node.children[i].split) * p / N)
+                _n = Decimal(sum(node.children[i].split) * n / N)
+                s += Decimal(getcontext().power((_p - node.children[i].split[1]), 2) / _p)
+                s += Decimal(getcontext().power((_n - node.children[i].split[0]), 2) / _n)
+            if chi2.chisqr(len(node.children) - 1, s) > Decimal(self.p_threshold):
+                return True
+        else:
+            return False
+
     def traverse(self):
         queue = []
         queue.append((self.root, 0))
         cur = 0
         pt = 0
+        internal_cnt = 0
+        leaf_cnt = 0
         while pt < len(queue):
             head = queue[pt]
+            if head[0].node_type == 'MIG':
+                internal_cnt += 1
+            else:
+                leaf_cnt += 1
+                
+            if (head[0].split[0] == 0 or head[0].split[1] == 0) and head[0].node_type == 'MIG':
+                print '({0}, ({1}, {2}), {3}, {4}, {5})'.format(head[0].feature_id, head[0].split[0], head[0].split[1], head[0].node_type, head[0].value, head[0].label),
             if head[1] != cur:
                 cur = head[1]
-                print '\n'
-            else:
-                print '({0}, ({1}, {2}), {3}, {4}, {5})'.format(head[0].feature_id, head[0].split[0], head[0].split[1], head[0].node_type, head[0].value, head[0].label),
+                # print '\n'
+            # else:
+                # print '({0}, ({1}, {2}), {3}, {4}, {5})'.format(head[0].feature_id, head[0].split[0], head[0].split[1], head[0].node_type, head[0].value, head[0].label),
             pt += 1
             if head[0].children != None:
                 for i in head[0].children:
                     queue.append((i, head[1] + 1))
-        print '\n'
+        # print '\n'
+        print 'internal node: {0}, leaf node: {1}'.format(internal_cnt, leaf_cnt)
 
     def test(self, test_data):
         if self.root == None:
@@ -162,6 +209,10 @@ class DecisionTree():
         while result == None:
             cnt += 1
             next_node = None
+            if cur_node.label != None: # early stopping
+                result = cur_node.label
+                break
+
             if cur_node.node_type == 'LS':
                 result = cur_node.label
                 break
@@ -179,8 +230,17 @@ class DecisionTree():
                 # if no hit, then missing value for one feature
             if next_node != None:
                 cur_node = next_node
-            else: # missing value
+            else: # missing value (value of feature in the test data doesn't show in the tree node's feature domain)
                 break
+
+        if result == None and cur_node.children != None: # when can not be divided
+            if cur_node.split[0] > cur_node.split[1]:
+                result = False
+            elif cur_node.split[1] > cur_node.split[0]:
+                result = True
+
+        # if result == None: # DS, meaning noisy data
+        #     result = bool(random.randint(0, 1))
 
         return result
 
@@ -200,7 +260,6 @@ def unit_test(dt, data_set, data_label):
     t = 0
     f = 0
     n = 0
-    print len(data_set)
     for i in range(len(data_set)):
         r = dt.test(data_set[i])
         if r == True:
@@ -212,9 +271,9 @@ def unit_test(dt, data_set, data_label):
         if r == data_label[i]:
             cnt += 1
     print ''
-    print t, f, n
+    print f, t, n
     print [len(filter(lambda x: x == i, data_label)) for i in set(data_label)]
-    print cnt, dt.size, cnt * 1. / len(data_set) 
+    print cnt, len(data_set), cnt * 1. / len(data_set) 
 
 def load(f_d, f_l):
     f_d = open(f_d, 'r')
@@ -236,22 +295,28 @@ def load(f_d, f_l):
     return test_data
 
 if __name__ == '__main__':
+    # print chi2.chisqr(Decimal('255'), Decimal('290.285192'))
     f_train_data = 'clickstream/trainfeat.csv'
     f_train_label = 'clickstream/trainlabs.csv'
     f_test_data = 'clickstream/testfeat.csv'
     f_test_label = 'clickstream/testlabs.csv'
 
-    dt = DecisionTree()
+    dt = DecisionTree(1.0)
     dt.load(f_train_data, f_train_label)
     print 'load done'
     print dt
     dt.build()
     print 'train done'
-    # dt.traverse()
+    dt.traverse()
+    dt.chi()
+    print 'chi square test done'
+    dt.traverse()
 
     # test on train set
+    print '\ntest on train data'
     unit_test(dt, map(lambda y: y[0], dt.train_data), map(lambda y: y[1], dt.train_data))
 
     # test on test set
+    print '\ntest on test data'
     test_data = load(f_test_data, f_test_label)
     unit_test(dt, map(lambda y: y[0], test_data), map(lambda y: y[1], test_data))
