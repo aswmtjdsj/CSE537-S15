@@ -301,7 +301,7 @@ if __name__ == '__main__':
     f_test_data = 'clickstream/testfeat.csv'
     f_test_label = 'clickstream/testlabs.csv'
 
-    dt = DecisionTree(1.0)
+    dt = DecisionTree(0.05)
     dt.load(f_train_data, f_train_label)
     print 'load done'
     print dt
@@ -319,4 +319,17 @@ if __name__ == '__main__':
     # test on test set
     print '\ntest on test data'
     test_data = load(f_test_data, f_test_label)
+
+    # test data distribution
+    # _test_data = []
+    # _cnt = 0
+    # for i in test_data:
+    #     if i[1] == False: 
+    #         _cnt += 1
+    #         if _cnt > 10000:
+    #             _test_data.append(i)
+    #     else:
+    #         _test_data.append(i)
+    # test_data = _test_data
+
     unit_test(dt, map(lambda y: y[0], test_data), map(lambda y: y[1], test_data))

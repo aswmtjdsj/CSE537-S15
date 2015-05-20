@@ -1,0 +1,18 @@
+load done
+tree size: 40000
+train done
+internal node: 5300, leaf node: 13343
+chi square test done
+internal node: 56, leaf node: 309
+
+test on train data
+
+38801 1199 0
+[32193, 7807]
+32628 40000 0.8157
+
+test on test data
+
+24283 715 2
+[18708, 6292]
+18619 25000 0.74476
