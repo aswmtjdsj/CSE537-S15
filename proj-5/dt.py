@@ -28,38 +28,27 @@ class DecisionTree():
     '''
     Decision Tree Class
     '''
-    def __init__(self, p_thre):
-        self.train_data = []
-
-        self.size = None
-
-        self.dimension = None
-        self.root = None
-
-        self.p_threshold = p_thre
-
-        self.debug = True
-
-    def load(self, f_d, f_l):
-        f_d = open(f_d, 'r')
-        f_l = open(f_l, 'r')
-        data = [map(int, i) for i in map(lambda x: x.strip().split(' '), f_d.read().strip().split('\n'))] # turn data line into feature list
-        label = map(bool, map(int, f_l.read().strip().split())) # turn label line into bool label
-        # print len(data), len(label)
-        self.size = len(data)
-        for i in range(self.size):
-            if self.dimension == None: # init dimensionality
-                self.dimension = len(data[i])
-            if len(data[i]) != self.dimension: # check missing features
-                raise Exception('data dimension not match: {0} (dimension) and {1} (new data item dimension)'.format(self.dimension, len(data[i])))
-            self.train_data.append((data[i], label[i]))
-        f_d.close()
-        f_l.close()
+    def __init__(self, p_thre, deb):
+        '''
+        init tree with threshold and debug option
+        '''
+        self.train_data = [] # training data
+        self.size = None # size of tree nodes
+        self.dimension = None # size of features of training data
+        self.root = None # root of the tree
+        self.p_threshold = p_thre # threshold for chi-square test
+        self.debug = deb # debug or not
 
     def build(self):
+        '''
+        wrapper for training procedure
+        '''
         self.root = self._build(self.train_data)
 
     def _build(self, train_data):
+        '''
+        recursive training procedure, splitting nodes based on conditions
+        '''
 
         data = map(lambda x: x[0], train_data)
         label = map(lambda x: x[1], train_data)
@@ -79,18 +68,15 @@ class DecisionTree():
             node.end_node = True
             return node
 
-        feature_count = None
+        # count data on different features
+        feature_count = [None] * self.dimension # dict for the number of data as for different features
         for i in range(len(data)):
-            if feature_count == None: # init dimensionality
-                feature_count = [None] * self.dimension # dict for the number of data as for different features
             for j in range(self.dimension): 
                 if feature_count[j] == None:
-                    feature_count[j] = {data[i][j]: [0, 0]}
+                    feature_count[j] = {data[i][j]: [0, 0]} # list(label_set)}# [0, 0]}
                 elif data[i][j] not in feature_count[j]:
-                    feature_count[j][data[i][j]] = [0, 0]
+                    feature_count[j][data[i][j]] = [0, 0] # list(label_set)
                 feature_count[j][data[i][j]][int(label[i])] += 1
-
-        # print feature_count
 
         all_feature_same = filter(lambda x: len(x) > 1, feature_count)
         if len(all_feature_same) == 0:
@@ -98,11 +84,12 @@ class DecisionTree():
             node.node_type = NODE_TYPE[0]
             return node
 
+        # calculate information gain by calculating entropy
+        # well, this is somehow redundant calculation, need improvement
+
+        # H(X) = -sum(p(x) * log(p(x))), x belongs to X
         h_x = sum(map(lambda x: - (x * 1. / len(label)) * math.log(x * 1. / len(label)) if x != 0 else 0., node.split))
         # print 'h_x: {0}'.format(h_x), [len(filter(lambda x: x == i, label)) for i in label_set]
-        # if node.split == [3, 3]:
-        #    print feature_count
-        #    print map(lambda x: len(x), feature_count)
 
         # IG(X, Y) = H(X) - sigma( C(Y) / C(X) * H(Y))
         ig_x_y = [None] * self.dimension
@@ -233,11 +220,8 @@ class DecisionTree():
             else: # missing value (value of feature in the test data doesn't show in the tree node's feature domain)
                 break
 
-        if result == None and cur_node.children != None: # when can not be divided
-            if cur_node.split[0] > cur_node.split[1]:
-                result = False
-            elif cur_node.split[1] > cur_node.split[0]:
-                result = True
+        if result == None and cur_node.children != None: # when can not be divided, (missing value?)
+            result = False if cur_node.split[0] > cur_node.split[1] else True # this way, split[0] == split[1] then True
 
         # if result == None: # DS, meaning noisy data
         #     result = bool(random.randint(0, 1))
@@ -248,12 +232,11 @@ class DecisionTree():
         if self.size == None:
             return 'tree not built'
         else:
-            if False and self.debug:
-            # if self.debug:
+            # if False and self.debug:
+            if self.debug:
                 for i in self.train_data:
                     print "data {{{0}}}: {1}".format(i[0], i[1])
-            # return 'tree size: {0}, dimension: {1}\nfeature count: {2}'.format(self.size, self.dimension, self.feature_count)
-            return 'tree size: {0}'.format(self.size)
+            return 'tree size: {0}, feature dimension: {1}'.format(self.size, self.dimension)
 
 def unit_test(dt, data_set, data_label):
     cnt = 0
@@ -280,19 +263,18 @@ def load(f_d, f_l):
     f_l = open(f_l, 'r')
     data = [map(int, i) for i in map(lambda x: x.strip().split(' '), f_d.read().strip().split('\n'))] # turn data line into feature list
     label = map(bool, map(int, f_l.read().strip().split())) # turn label line into bool label
-    # print len(data), len(label)
     size = len(data)
     dimension = None
-    test_data = []
+    parsed_data = []
     for i in range(size):
         if dimension == None: # init dimensionality
             dimension = len(data[i])
         if len(data[i]) != dimension: # check missing features
-            raise Exception('data dimension not match: {0} (dimension) and {1} (new data item dimension)'.format(self.dimension, len(data[i])))
-        test_data.append((data[i], label[i]))
+            raise Exception('data dimension not match: {0} (dimension) and {1} (new data item dimension)'.format(dimension, len(data[i])))
+        parsed_data.append((data[i], label[i]))
     f_d.close()
     f_l.close()
-    return test_data
+    return size, parsed_data, dimension
 
 if __name__ == '__main__':
     # print chi2.chisqr(Decimal('255'), Decimal('290.285192'))
@@ -301,8 +283,8 @@ if __name__ == '__main__':
     f_test_data = 'clickstream/testfeat.csv'
     f_test_label = 'clickstream/testlabs.csv'
 
-    dt = DecisionTree(0.05)
-    dt.load(f_train_data, f_train_label)
+    dt = DecisionTree(0.05, False)
+    dt.size, dt.train_data, dt.dimension = load(f_train_data, f_train_label)
     print 'load done'
     print dt
     dt.build()
@@ -318,7 +300,7 @@ if __name__ == '__main__':
 
     # test on test set
     print '\ntest on test data'
-    test_data = load(f_test_data, f_test_label)
+    test_data = load(f_test_data, f_test_label)[1]
 
     # test data distribution
     # _test_data = []
